@@ -5,7 +5,7 @@ import bg from './assets/space.jpg';
 import { MapContainer, TileLayer, Marker, Popup, Tooltip } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-
+import { useNavigate } from "react-router-dom";
 // Fix for default marker icon paths (webpack / CRA friendly imports)
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -52,7 +52,7 @@ const HomePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [scrollY, setScrollY] = useState(0);
   const [isVisible, setIsVisible] = useState({});
-
+const navigate = useNavigate();
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', handleScroll);
@@ -404,7 +404,7 @@ const HomePage = () => {
             {['Home', 'Marketplace', 'About', 'Contact'].map((item) => (
               <button
                 key={item}
-                onClick={() => console.log(item)}
+                onClick={() => navigate(item === 'Home' ? '/' : `/${item.toLowerCase()}`)}
                 style={{
                   backdropFilter: 'blur(20px)',
                   WebkitBackdropFilter: 'blur(20px)',
@@ -440,8 +440,8 @@ const HomePage = () => {
           {/* User Actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <button
-              onClick={() => console.log('Sign In')}
-              style={{
+            onClick={() => navigate("/signin")}
+              style={{  
                 backdropFilter: 'blur(20px)',
                 WebkitBackdropFilter: 'blur(20px)',
                 backgroundColor: 'rgba(255, 255, 255, 0.1)',
