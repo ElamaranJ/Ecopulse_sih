@@ -402,39 +402,45 @@ const navigate = useNavigate();
             gap: '8px'
           }}>
             {['Home', 'Marketplace', 'About', 'Contact'].map((item) => (
-              <button
-                key={item}
-                onClick={() => navigate(item === 'Home' ? '/' : `/${item.toLowerCase()}`)}
-                style={{
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '16px',
-                  padding: '12px 24px',
-                  color: 'rgba(255, 255, 255, 0.9)',
-                  fontWeight: '600',
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
-                  userSelect: 'none',
-                  outline: 'none'
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-                  e.target.style.transform = 'translateY(-2px)';
-                  e.target.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                  e.target.style.transform = 'translateY(0)';
-                  e.target.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
-                }}
-              >
-                {item}
-              </button>
-            ))}
+  <button
+    key={item}
+    onClick={() => {
+      if (item === 'Home') {
+        navigate('/');
+      } else {
+        navigate(`/${item.toLowerCase()}`);
+      }
+    }}
+    style={{
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      border: '1px solid rgba(255, 255, 255, 0.2)',
+      borderRadius: '16px',
+      padding: '12px 24px',
+      color: 'rgba(255, 255, 255, 0.9)',
+      fontWeight: '600',
+      fontSize: '14px',
+      cursor: 'pointer',
+      transition: 'all 0.3s ease',
+      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+      userSelect: 'none',
+      outline: 'none'
+    }}
+    onMouseEnter={(e) => {
+      e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+      e.target.style.transform = 'translateY(-2px)';
+      e.target.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3)';
+    }}
+    onMouseLeave={(e) => {
+      e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+      e.target.style.transform = 'translateY(0)';
+      e.target.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
+    }}
+  >
+    {item}
+  </button>
+))}
           </div>
 
           {/* User Actions */}

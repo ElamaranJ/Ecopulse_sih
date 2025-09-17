@@ -1,5 +1,5 @@
 import React from 'react';
-import { Phone, Mail, MapPin, Linkedin, Twitter, Sparkles, ArrowLeft } from 'lucide-react';
+import { Phone, Mail, MapPin, Linkedin, Instagram, Youtube, ArrowLeft } from 'lucide-react';
 import bg from './assets/space.jpg';
 import { useNavigate } from "react-router-dom";
 
@@ -90,21 +90,21 @@ const GlassButton = ({ children, isActive, onClick, className = '' }) => (
 const ContactPage = () => {
     const navigate = useNavigate();
 
-    // Coordinates for Chennai
-    const chennaiCoordinates = [13.04, 80.17];
+    // Coordinates for R.M.D Engineering College, Kavarapettai
+    const collegeCoordinates = [13.2297, 80.1109];
 
-    const socialLinks = [
-        { icon: Linkedin, name: 'LinkedIn', url: '#' },
-        { icon: Twitter, name: 'Twitter', url: '#' },
-        { icon: Sparkles, name: 'EcoPulse', url: '#' }
-    ];
-
-    // Custom icon that's just a text label
+    // Custom icon that's just a text label for college name
     const customTextIcon = L.divIcon({
       className: 'custom-text-marker',
-      html: `<div style="color: black; font-weight: bold; font-size: 1rem; text-shadow: 1px 1px 3px rgba(255,255,255,0.5);">EcoPulse HQ - Chennai</div>`,
-      iconAnchor: [0, 0], // Position the anchor at the top-left of the text
+      html: `<div style="color: black; font-weight: bold; font-size: 1rem; text-shadow: 1px 1px 3px rgba(255,255,255,0.5); background: rgba(255,255,255,0.8); padding: 4px 8px; border-radius: 6px; border: 1px solid #ccc;">R.M.D Engineering College</div>`,
+      iconAnchor: [80, 15], // Center the text label
     });
+
+    const socialLinks = [
+        { icon: Linkedin, name: 'LinkedIn', url: 'https://www.linkedin.com/in/elamaran-j-a4ab8b32a/' },
+        { icon: Instagram, name: 'Instagram', url: 'https://www.instagram.com/a_l_o_n_e_maran___/' },
+        { icon: Youtube, name: 'YouTube', url: 'https://youtu.be/IjWWnDZlezI?feature=shared' }
+    ];
 
     return (
         <div style={{
@@ -220,19 +220,19 @@ const ContactPage = () => {
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
                                     <MapPin size={24} color="#a8edea" />
                                     <p style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '1.1rem' }}>
-                                        EcoPulse HQ, 123 Circular Road, Chennai, India 600001
+                                        R.M.D Engineering College, R.S.M. Nagar, Kavarapettai, Gummidipoondi, Tiruvallur, Tamil Nadu - 601206
                                     </p>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
                                     <Phone size={24} color="#fed6e3" />
                                     <p style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '1.1rem' }}>
-                                        +91 98765 43210
+                                        +91 7299273747
                                     </p>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                                     <Mail size={24} color="#a8edea" />
                                     <p style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '1.1rem' }}>
-                                        contact@ecopulse.com
+                                      ecopulse@gmail.com
                                     </p>
                                 </div>
                             </GlassCard>
@@ -261,24 +261,41 @@ const ContactPage = () => {
                     {/* Map Section */}
                     <GlassCard>
                         <h2 style={{ color: 'white', fontSize: '2rem', fontWeight: '600', marginBottom: '20px', textAlign: 'center' }}>Office Location Map</h2>
-                        <MapContainer
-                            center={chennaiCoordinates}
-                            zoom={13}
-                            scrollWheelZoom={false}
+                        <div
                             style={{
                                 width: '100%',
                                 height: '400px',
                                 borderRadius: '12px',
                                 border: '1px solid rgba(255, 255, 255, 0.1)',
+                                overflow: 'hidden'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.cursor = 'grab';
+                                // Disable page scroll when hovering over map
+                                document.body.style.overflow = 'hidden';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.cursor = 'default';
+                                // Re-enable page scroll when leaving map
+                                document.body.style.overflow = 'auto';
                             }}
                         >
+                            <MapContainer
+                                center={collegeCoordinates}
+                                zoom={15}
+                                scrollWheelZoom={true}
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                }}
+                            >
                             <TileLayer
                                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
-                            {/* Text label for Chennai */}
-                            <Marker position={chennaiCoordinates} icon={customTextIcon} />
+                            <Marker position={collegeCoordinates} icon={customTextIcon} />
                         </MapContainer>
+                        </div>
                     </GlassCard>
                 </div>
             </div>
