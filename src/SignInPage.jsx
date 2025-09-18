@@ -9,6 +9,11 @@ const SignInPage = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  
+  // Get role from URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const selectedRole = urlParams.get('role');
+
 
   // Use the same background style as HomePage and SignUpPage
   const backgroundStyle = {
@@ -225,13 +230,41 @@ const SignInPage = () => {
       </div>
     </div>
   );
-
-  const handleSignIn = (e) => {
-    e.preventDefault();
-    console.log('Sign in with', email, password);
-    // Navigate to homepage after successful sign in
+const handleSignIn = (e) => {
+  e.preventDefault();
+  console.log('Sign in with:', { email, password });
+  
+  // Get all registered users from localStorage
+  const existingUsers = JSON.parse(localStorage.getItem('ecopulse_users') || '[]');
+  
+  // Find user with matching email and password
+  const user = existingUsers.find(u => u.email === email && u.password === password);
+  
+  if (!user) {
+    alert('Invalid email or password. Please try again.');
+    return;
+  }
+  
+  // Store current user session
+  localStorage.setItem('ecopulse_current_user', JSON.stringify(user));
+  
+  // Redirect based on user's registered role (not URL parameter)
+  if (user.role === 'buyer') {
+    alert(`Welcome back, ${user.name}!`);
+    navigate('/buyer-dashboard');
+  } else if (user.role === 'seller') {
+    alert(`Welcome back, ${user.name}!`);
+    navigate('/seller-dashboard');
+  } else if (user.role === 'transportpartner') {
+    alert(`Welcome back, ${user.name}!`);
+    navigate('/transport-dashboard');
+  } else {
+    alert('Unknown user role. Please contact support.');
     navigate('/');
-  };
+  }
+};
+
+
 
   return (
     <div style={backgroundStyle}>
@@ -370,24 +403,25 @@ const SignInPage = () => {
           </form>
           
           {/* Sign Up Link */}
-          <div style={{ 
-            marginTop: '24px', 
-            fontSize: '14px', 
-            color: "rgba(255,255,255,0.75)", 
-            textAlign: "center" 
-          }}>
-            Don't have an account?{" "}
-            <Link 
-              to="/signup" 
-              style={{ 
-                color: "rgba(16, 185, 129, 0.95)", 
-                textDecoration: "underline",
-                fontWeight: '600'
-              }}
-            >
-              Sign Up
-            </Link>
-          </div>
+<div style={{ 
+  marginTop: '24px', 
+  fontSize: '14px', 
+  color: "rgba(255,255,255,0.75)", 
+  textAlign: "center" 
+}}>
+  Don't have an account?{" "}
+  <Link 
+    to={`/signup${selectedRole ? `?role=${selectedRole}` : ''}`}
+    style={{ 
+      color: "rgba(16, 185, 129, 0.95)", 
+      textDecoration: "underline",
+      fontWeight: '600'
+    }}
+  >
+    Sign Up
+  </Link>
+</div>
+
 
           {/* Forgot Password Link */}
           <div style={{ 

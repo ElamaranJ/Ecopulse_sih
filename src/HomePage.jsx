@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+import { ShoppingCart, Building, Truck } from "lucide-react";
 
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: markerIcon2x,
@@ -272,6 +273,107 @@ const navigate = useNavigate();
       {children}
     </div>
   );
+// Section with role cards for Buyer, Seller, Transport
+// Section with role cards for Buyer, Seller, Transport
+const RoleCards = () => {
+  const navigate = useNavigate();
+  
+  // Update the role cards section in HomePage.jsx
+  const roles = [
+    {
+      id: "buyer",
+      title: "Buyer",
+      desc: "Browse and order scrap materials",
+      icon: ShoppingCart
+    },
+    {
+      id: "seller", 
+      title: "Seller",
+      desc: "List your scrap & reach buyers",
+      icon: Building
+    },
+    {
+      id: "transport",
+      title: "Transport",
+      desc: "Find delivery jobs & earn money", 
+      icon: Truck
+    }
+  ];
+
+  return (
+    <div style={{ padding: '60px 20px', textAlign: 'center' }}>
+      <h2 style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '32px', color: 'white' }}>
+        Get Started As
+      </h2>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', maxWidth: '1000px', margin: '0 auto' }}>
+        {roles.map((role) => {
+          const IconComponent = role.icon;
+          return (
+            <div
+              key={role.id}
+              onClick={() => navigate(`/signin?role=${role.id}`)} // Pass role as query parameter
+              style={{
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '20px',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                textAlign: 'center',
+                padding: '40px 30px',
+                width: '100%',
+                maxWidth: '300px',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = 'translateY(-5px)';
+                e.target.style.boxShadow = '0 20px 40px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = 'translateY(0px)';
+                e.target.style.boxShadow = '0 8px 32px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.2)';
+              }}
+            >
+              <div style={{
+                width: '80px',
+                height: '80px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 20px auto',
+                boxShadow: '0 10px 30px rgba(16, 185, 129, 0.3)'
+              }}>
+                <IconComponent size={36} style={{ color: 'white' }} />
+              </div>
+              
+              <h3 style={{
+                fontSize: '24px',
+                fontWeight: 'bold',
+                color: 'white',
+                margin: '0 0 12px 0',
+                letterSpacing: '0.5px'
+              }}>
+                {role.title}
+              </h3>
+              
+              <p style={{
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontSize: '16px',
+                margin: '0',
+                lineHeight: '1.5'
+              }}>
+                {role.desc}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
   // All sellers map with custom markers
   const AllSellersMap = ({ markers }) => {
@@ -597,7 +699,7 @@ const navigate = useNavigate();
           </GlassButton>
         </div>
       </div>
-
+<RoleCards />
       {/* Conditionally show all-sellers map */}
       <div style={{ padding: '0 20px 20px' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>

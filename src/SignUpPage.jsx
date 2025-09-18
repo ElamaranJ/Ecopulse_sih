@@ -4,9 +4,15 @@ import { Link, useNavigate } from "react-router-dom";
 import bg from './assets/space.jpg';
 
 const SignUpPage = () => {
-  const [currentStep, setCurrentStep] = useState('selection');
+  // Get role from URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const selectedRole = urlParams.get('role');
+  
+  // Set initial step based on role
+  const [currentStep, setCurrentStep] = useState(selectedRole ? selectedRole : 'selection');
   const [formData, setFormData] = useState({});
   const navigate = useNavigate();
+
 
   // Use the same background style as HomePage
   const backgroundStyle = {
@@ -164,12 +170,75 @@ const SignUpPage = () => {
   const handleFileUpload = (field, file) => {
     setFormData(prev => ({ ...prev, [field]: file }));
   };
+// Update the role selection logic
+const selectUserType = (userType) => {
+  setCurrentStep(userType.toLowerCase());
+};
 
-  const handleSubmit = (e, userType) => {
-    e.preventDefault();
-    console.log(`${userType} sign up with:`, formData);
-    alert(`${userType} registration submitted - replace with actual logic`);
+// Add a back to role selection option if user came from homepage
+const handleBackToSelection = () => {
+  if (selectedRole) {
+    navigate('/'); // Go back to homepage
+  } else {
+    setCurrentStep('selection');
+  }
+};
+
+ const handleSubmit = (e, userType) => {
+  e.preventDefault();
+  console.log(`${userType} sign up with:`, formData);
+  
+  // Convert URL role to proper case
+  const roleMap = {
+    'buyer': 'Buyer',
+    'seller': 'Seller', 
+    'transport': 'Transport Partner'
   };
+  
+  const actualUserType = roleMap[userType] || userType;
+  
+  // Store user data in localStorage (simulating a database)
+  const userData = {
+    email: formData.email,
+    password: formData.password, // In real app, this would be hashed
+    role: actualUserType.toLowerCase().replace(' ', ''), // 'buyer', 'seller', 'transportpartner'
+    name: formData.name || formData.businessName || formData.companyName,
+    registrationDate: new Date().toISOString(),
+    ...formData
+  };
+  
+  // Get existing users from localStorage
+  const existingUsers = JSON.parse(localStorage.getItem('ecopulse_users') || '[]');
+  
+  // Check if user already exists
+  const userExists = existingUsers.find(user => user.email === formData.email);
+  if (userExists) {
+    alert('User with this email already exists! Please sign in instead.');
+    return;
+  }
+  
+  // Add new user to the list
+  existingUsers.push(userData);
+  localStorage.setItem('ecopulse_users', JSON.stringify(existingUsers));
+  
+  // Store current user session
+  localStorage.setItem('ecopulse_current_user', JSON.stringify(userData));
+  
+  // Show success message and redirect
+  if (actualUserType === 'Seller') {
+    alert('Seller registration successful! Redirecting to dashboard...');
+    navigate('/seller-dashboard');
+  } else if (actualUserType === 'Buyer') {
+    alert('Buyer registration successful! Redirecting to dashboard...');
+    navigate('/buyer-dashboard');
+  } else if (actualUserType === 'Transport Partner') {
+    alert('Transport Partner registration successful! Redirecting to dashboard...');
+    navigate('/transport-dashboard');
+  }
+};
+
+
+
 
   // Navigation Header matching HomePage style
   const NavHeader = () => (
@@ -309,7 +378,7 @@ const SignUpPage = () => {
               </p>
             </div>
 
-            <GlassCard onClick={() => setCurrentStep('seller')}>
+            <GlassCard onClick={() => selectUserType('seller')}>
               <Building size={32} style={{ marginBottom: 12, color: "#10b981" }} />
               <h3 style={{ margin: "8px 0", fontSize: "1.2rem", fontWeight: '600' }}>Seller / Supplier</h3>
               <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.9rem", margin: 0 }}>
@@ -317,7 +386,7 @@ const SignUpPage = () => {
               </p>
             </GlassCard>
 
-            <GlassCard onClick={() => setCurrentStep('buyer')}>
+            <GlassCard onClick={() => selectUserType('buyer')}>
               <ShoppingCart size={32} style={{ marginBottom: 12, color: "#3b82f6" }} />
               <h3 style={{ margin: "8px 0", fontSize: "1.2rem", fontWeight: '600' }}>Buyer / Recycler</h3>
               <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.9rem", margin: 0 }}>
@@ -325,7 +394,7 @@ const SignUpPage = () => {
               </p>
             </GlassCard>
 
-            <GlassCard onClick={() => setCurrentStep('transport')}>
+            <GlassCard onClick={() => selectUserType('transport')}>
               <Truck size={32} style={{ marginBottom: 12, color: "#f59e0b" }} />
               <h3 style={{ margin: "8px 0", fontSize: "1.2rem", fontWeight: '600' }}>Transportation Partner</h3>
               <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.9rem", margin: 0 }}>
@@ -346,233 +415,288 @@ const SignUpPage = () => {
   }
 
   // Seller Registration Form
-  if (currentStep === 'seller') {
-    return (
-      <div style={backgroundStyle}>
-        <NavHeader />
-        <div style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "20px",
-          paddingTop: "100px",
-          paddingBottom: "40px"
-        }}>
-          <div style={glassContainerStyle}>
-            <GlassButton 
-              variant="back" 
-              onClick={() => setCurrentStep('selection')}
-            >
-              <ChevronLeft size={16} /> Back to Selection
-            </GlassButton>
-            
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }}>
-              <div style={{
-                padding: '12px',
-                borderRadius: '12px',
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                <Building size={24} color="white" />
-              </div>
-              <div>
-                <h2 style={{ margin: 0, fontSize: "1.8rem", fontWeight: '600' }}>Seller Registration</h2>
-                <p style={{ margin: '4px 0 0 0', color: "rgba(255,255,255,0.8)", fontSize: '0.9rem' }}>
-                  Register as a waste material seller/supplier
-                </p>
-              </div>
+if (currentStep === 'seller') {
+  return (
+    <div style={backgroundStyle}>
+      <NavHeader />
+      <div style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "20px",
+        paddingTop: "100px",
+        paddingBottom: "40px"
+      }}>
+        <div style={glassContainerStyle}>
+          <GlassButton 
+            variant="back" 
+            onClick={() => setCurrentStep('selection')}
+          >
+            <ChevronLeft size={16} /> Back to Selection
+          </GlassButton>
+          
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }}>
+            <div style={{
+              padding: '12px',
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <Building size={24} color="white" />
             </div>
-
-            <form onSubmit={(e) => handleSubmit(e, 'Seller')}>
-              <label style={{ 
-                display: "flex", 
-                alignItems: "center", 
-                gap: "8px", 
-                marginBottom: 8, 
-                fontSize: 14, 
-                color: "rgba(255,255,255,0.9)",
-                fontWeight: '500'
-              }}>
-                <Mail size={14} /> Email ID *
-              </label>
-              <input
-                type="email"
-                placeholder="your-business@example.com"
-                required
-                style={inputStyle}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                onFocus={(e) => {
-                  e.target.style.borderColor = 'rgba(59, 130, 246, 0.5)';
-                  e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                  e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                }}
-              />
-
-              <label style={{ 
-                display: "flex", 
-                alignItems: "center", 
-                gap: "8px", 
-                marginBottom: 8, 
-                fontSize: 14, 
-                color: "rgba(255,255,255,0.9)",
-                fontWeight: '500'
-              }}>
-                <User size={14} /> Full Name / Company Name *
-              </label>
-              <input
-                type="text"
-                placeholder="Your Name or Company Name"
-                required
-                style={inputStyle}
-                onChange={(e) => handleInputChange('name', e.target.value)}
-                onFocus={(e) => {
-                  e.target.style.borderColor = 'rgba(59, 130, 246, 0.5)';
-                  e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                  e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                }}
-              />
-
-              <label style={{ 
-                display: "flex", 
-                alignItems: "center", 
-                gap: "8px", 
-                marginBottom: 8, 
-                fontSize: 14, 
-                color: "rgba(255,255,255,0.9)",
-                fontWeight: '500'
-              }}>
-                <Phone size={14} /> Contact Number *
-              </label>
-              <input
-                type="tel"
-                placeholder="+91 9876543210"
-                required
-                style={inputStyle}
-                onChange={(e) => handleInputChange('phone', e.target.value)}
-                onFocus={(e) => {
-                  e.target.style.borderColor = 'rgba(59, 130, 246, 0.5)';
-                  e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                  e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                }}
-              />
-
-              <label style={{ 
-                display: "flex", 
-                alignItems: "center", 
-                gap: "8px", 
-                marginBottom: 8, 
-                fontSize: 14, 
-                color: "rgba(255,255,255,0.9)",
-                fontWeight: '500'
-              }}>
-                <MapPin size={14} /> Address / Location *
-              </label>
-              <textarea
-                placeholder="Complete address"
-                required
-                style={{...inputStyle, minHeight: "80px", resize: "vertical", fontFamily: "inherit"}}
-                onChange={(e) => handleInputChange('address', e.target.value)}
-                onFocus={(e) => {
-                  e.target.style.borderColor = 'rgba(59, 130, 246, 0.5)';
-                  e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                  e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                }}
-              />
-
-              <label style={{ 
-                display: "flex", 
-                alignItems: "center", 
-                gap: "8px", 
-                marginBottom: 8, 
-                fontSize: 14, 
-                color: "rgba(255,255,255,0.9)",
-                fontWeight: '500'
-              }}>
-                <Package size={14} /> Materials You're Interested In *
-              </label>
-              <select
-                style={inputStyle}
-                required
-                onChange={(e) => handleInputChange('interestedMaterials', e.target.value)}
-              >
-                <option value="" style={{ background: '#1f2937', color: 'white' }}>Select material type</option>
-                <option value="metal" style={{ background: '#1f2937', color: 'white' }}>Metal Scrap</option>
-                <option value="plastic" style={{ background: '#1f2937', color: 'white' }}>Plastic Waste</option>
-                <option value="paper" style={{ background: '#1f2937', color: 'white' }}>Paper & Cardboard</option>
-                <option value="textile" style={{ background: '#1f2937', color: 'white' }}>Textile Waste</option>
-                <option value="ewaste" style={{ background: '#1f2937', color: 'white' }}>Electronic Waste</option>
-                <option value="all" style={{ background: '#1f2937', color: 'white' }}>All Types</option>
-              </select>
-
-              <label style={{ 
-                display: "flex", 
-                alignItems: "center", 
-                gap: "8px", 
-                marginBottom: 8, 
-                fontSize: 14, 
-                color: "rgba(255,255,255,0.9)",
-                fontWeight: '500'
-              }}>
-                <FileText size={14} /> Business License / ID Proof *
-              </label>
-              <input
-                type="file"
-                accept=".pdf,.jpg,.png"
-                required
-                style={{...inputStyle, padding: "12px 16px"}}
-                onChange={(e) => handleFileUpload('businessLicense', e.target.files[0])}
-              />
-
-              <label style={{ 
-                display: "flex", 
-                alignItems: "center", 
-                gap: "8px", 
-                marginBottom: 8, 
-                fontSize: 14, 
-                color: "rgba(255,255,255,0.7)",
-                fontWeight: '500'
-              }}>
-                <CreditCard size={14} /> PAN / GST Number (Optional for business buyers)
-              </label>
-              <input
-                type="text"
-                placeholder="PAN or GST Number"
-                style={{...inputStyle, marginBottom: "24px"}}
-                onChange={(e) => handleInputChange('panGst', e.target.value)}
-                onFocus={(e) => {
-                  e.target.style.borderColor = 'rgba(59, 130, 246, 0.5)';
-                  e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                  e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                }}
-              />
-
-              <GlassButton type="submit" variant="primary">
-                Register as Buyer
-              </GlassButton>
-            </form>
+            <div>
+              <h2 style={{ margin: 0, fontSize: "1.8rem", fontWeight: '600' }}>Seller Registration</h2>
+              <p style={{ margin: '4px 0 0 0', color: "rgba(255,255,255,0.8)", fontSize: '0.9rem' }}>
+                Register as a waste material seller/supplier
+              </p>
+            </div>
           </div>
+
+          <form onSubmit={(e) => handleSubmit(e, 'Seller')}>
+            <label style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "8px", 
+              marginBottom: 8, 
+              fontSize: 14, 
+              color: "rgba(255,255,255,0.9)",
+              fontWeight: '500'
+            }}>
+              <Mail size={14} /> Email ID *
+            </label>
+            <input
+              type="email"
+              placeholder="your-business@example.com"
+              required
+              style={inputStyle}
+              onChange={(e) => handleInputChange('email', e.target.value)}
+              onFocus={(e) => {
+                e.target.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+              }}
+            />
+
+            <label style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "8px", 
+              marginBottom: 8, 
+              fontSize: 14, 
+              color: "rgba(255,255,255,0.9)",
+              fontWeight: '500'
+            }}>
+              <Lock size={14} /> Password *
+            </label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              required
+              style={inputStyle}
+              onChange={(e) => handleInputChange('password', e.target.value)}
+              onFocus={(e) => {
+                e.target.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+              }}
+            />
+
+            <label style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "8px", 
+              marginBottom: 8, 
+              fontSize: 14, 
+              color: "rgba(255,255,255,0.9)",
+              fontWeight: '500'
+            }}>
+              <Lock size={14} /> Confirm Password *
+            </label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              required
+              style={inputStyle}
+              onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+              onFocus={(e) => {
+                e.target.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+              }}
+            />
+
+            <label style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "8px", 
+              marginBottom: 8, 
+              fontSize: 14, 
+              color: "rgba(255,255,255,0.9)",
+              fontWeight: '500'
+            }}>
+              <User size={14} /> Full Name / Company Name *
+            </label>
+            <input
+              type="text"
+              placeholder="Your Name or Company Name"
+              required
+              style={inputStyle}
+              onChange={(e) => handleInputChange('name', e.target.value)}
+              onFocus={(e) => {
+                e.target.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+              }}
+            />
+
+            <label style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "8px", 
+              marginBottom: 8, 
+              fontSize: 14, 
+              color: "rgba(255,255,255,0.9)",
+              fontWeight: '500'
+            }}>
+              <Phone size={14} /> Contact Number *
+            </label>
+            <input
+              type="tel"
+              placeholder="+91 9876543210"
+              required
+              style={inputStyle}
+              onChange={(e) => handleInputChange('phone', e.target.value)}
+              onFocus={(e) => {
+                e.target.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+              }}
+            />
+
+            <label style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "8px", 
+              marginBottom: 8, 
+              fontSize: 14, 
+              color: "rgba(255,255,255,0.9)",
+              fontWeight: '500'
+            }}>
+              <MapPin size={14} /> Address / Location *
+            </label>
+            <textarea
+              placeholder="Complete address"
+              required
+              style={{...inputStyle, minHeight: "80px", resize: "vertical", fontFamily: "inherit"}}
+              onChange={(e) => handleInputChange('address', e.target.value)}
+              onFocus={(e) => {
+                e.target.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+              }}
+            />
+
+            <label style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "8px", 
+              marginBottom: 8, 
+              fontSize: 14, 
+              color: "rgba(255,255,255,0.9)",
+              fontWeight: '500'
+            }}>
+              <Package size={14} /> Materials You're Interested In *
+            </label>
+            <select
+              style={inputStyle}
+              required
+              onChange={(e) => handleInputChange('interestedMaterials', e.target.value)}
+            >
+              <option value="" style={{ background: '#1f2937', color: 'white' }}>Select material type</option>
+              <option value="metal" style={{ background: '#1f2937', color: 'white' }}>Metal Scrap</option>
+              <option value="plastic" style={{ background: '#1f2937', color: 'white' }}>Plastic Waste</option>
+              <option value="paper" style={{ background: '#1f2937', color: 'white' }}>Paper & Cardboard</option>
+              <option value="textile" style={{ background: '#1f2937', color: 'white' }}>Textile Waste</option>
+              <option value="ewaste" style={{ background: '#1f2937', color: 'white' }}>Electronic Waste</option>
+              <option value="all" style={{ background: '#1f2937', color: 'white' }}>All Types</option>
+            </select>
+
+            <label style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "8px", 
+              marginBottom: 8, 
+              fontSize: 14, 
+              color: "rgba(255,255,255,0.9)",
+              fontWeight: '500'
+            }}>
+              <FileText size={14} /> Business License / ID Proof *
+            </label>
+            <input
+              type="file"
+              accept=".pdf,.jpg,.png"
+              required
+              style={{...inputStyle, padding: "12px 16px"}}
+              onChange={(e) => handleFileUpload('businessLicense', e.target.files[0])}
+            />
+
+            <label style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "8px", 
+              marginBottom: 8, 
+              fontSize: 14, 
+              color: "rgba(255,255,255,0.7)",
+              fontWeight: '500'
+            }}>
+              <CreditCard size={14} /> PAN / GST Number (Optional for business sellers)
+            </label>
+            <input
+              type="text"
+              placeholder="PAN or GST Number"
+              style={{...inputStyle, marginBottom: "24px"}}
+              onChange={(e) => handleInputChange('panGst', e.target.value)}
+              onFocus={(e) => {
+                e.target.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+              }}
+            />
+
+            <GlassButton type="submit" variant="primary">
+              Register as Seller
+            </GlassButton>
+          </form>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
+  
 // Add this section after the Seller Registration Form and before the Transport Partner section
 
 // Buyer Registration Form
@@ -643,33 +767,47 @@ if (currentStep === 'buyer') {
                 e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
               }}
             />
+<label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', fontSize: '14px', color: 'rgba(255,255,255,0.9)', fontWeight: '500' }}>
+  <Lock size={14} />
+  Password
+</label>
+<input
+  type="password"
+  placeholder="Create a secure password"
+  required
+  style={inputStyle}
+  onChange={(e) => handleInputChange('password', e.target.value)}
+  onFocus={(e) => {
+    e.target.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+    e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+  }}
+  onBlur={(e) => {
+    e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+    e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+  }}
+/>
 
-            <label style={{ 
-              display: "flex", 
-              alignItems: "center", 
-              gap: "8px", 
-              marginBottom: 8, 
-              fontSize: 14, 
-              color: "rgba(255,255,255,0.9)",
-              fontWeight: '500'
-            }}>
-              <Lock size={14} /> Password *
-            </label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              required
-              style={inputStyle}
-              onChange={(e) => handleInputChange('password', e.target.value)}
-              onFocus={(e) => {
-                e.target.style.borderColor = 'rgba(59, 130, 246, 0.5)';
-                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-              }}
-            />
+<label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', fontSize: '14px', color: 'rgba(255,255,255,0.9)', fontWeight: '500' }}>
+  <Lock size={14} />
+  Confirm Password
+</label>
+<input
+  type="password"
+  placeholder="Confirm your password"
+  required
+  style={inputStyle}
+  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+  onFocus={(e) => {
+    e.target.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+    e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+  }}
+  onBlur={(e) => {
+    e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+    e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+  }}
+/>
+
+          
 
             <label style={{ 
               display: "flex", 
