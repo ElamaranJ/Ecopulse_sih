@@ -405,12 +405,22 @@ const navigate = useNavigate();
   <button
     key={item}
     onClick={() => {
-      if (item === 'Home') {
-        navigate('/');
-      } else {
-        navigate(`/${item.toLowerCase()}`);
-      }
-    }}
+  if (item === 'Home') {
+    if (window.location.pathname === '/') {
+      // Force scroll even if already on Home
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      navigate('/');
+      // after navigating, also scroll
+      setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+    }
+  } else {
+    navigate(`/${item.toLowerCase()}`);
+    // optional: auto scroll for other pages too
+    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+  }
+}}
+
     style={{
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
@@ -464,31 +474,35 @@ const navigate = useNavigate();
             >
               Sign In
             </button>
-            <button style={{
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              backgroundColor: 'rgba(16, 185, 129, 0.2)',
-              border: '1px solid rgba(16, 185, 129, 0.4)',
-              borderRadius: '12px',
-              padding: '10px 20px',
-              color: '#dfeee9ff',
-              fontWeight: '600',
-              fontSize: '14px',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 4px 16px rgba(16, 185, 129, 0.2)',
-              outline: 'none'
-            }}
-              onMouseEnter={(e) => {
-                e.target.style.backgroundColor = 'rgba(19, 219, 159, 0.98)';
-                e.target.style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.backgroundColor = 'rgba(33, 189, 137, 1)';
-                e.target.style.transform = 'translateY(0)';
-              }}>
-              Get Started
-            </button>
+           <button
+  onClick={() => navigate("/signup")}
+  style={{
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    border: '1px solid rgba(16, 185, 129, 0.4)',
+    borderRadius: '12px',
+    padding: '10px 20px',
+    color: '#dfeee9ff',
+    fontWeight: '600',
+    fontSize: '14px',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    boxShadow: '0 4px 16px rgba(16, 185, 129, 0.2)',
+    outline: 'none'
+  }}
+  onMouseEnter={(e) => {
+    e.target.style.backgroundColor = 'rgba(19, 219, 159, 0.98)';
+    e.target.style.transform = 'translateY(-2px)';
+  }}
+  onMouseLeave={(e) => {
+    e.target.style.backgroundColor = 'rgba(33, 189, 137, 1)';
+    e.target.style.transform = 'translateY(0)';
+  }}
+>
+  Get Started
+</button>
+
           </div>
         </div>
       </div>
