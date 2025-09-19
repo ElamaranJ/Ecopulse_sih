@@ -53,12 +53,15 @@ const HomePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [scrollY, setScrollY] = useState(0);
   const [isVisible, setIsVisible] = useState({});
+ const [showAnalyticsModal, setShowAnalyticsModal] = useState(false);
+
 const navigate = useNavigate();
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
 
   // Categories
   const categories = [
@@ -299,6 +302,10 @@ const RoleCards = () => {
       icon: Truck
     }
   ];
+// Add this analytics modal component before your return statement
+
+
+  
 
   return (
     <div style={{ padding: '60px 20px', textAlign: 'center' }}>
@@ -439,7 +446,220 @@ const RoleCards = () => {
       </div>
     );
   };
+// Analytics Modal Component
+  
 
+  // Analytics Modal Component
+const AnalyticsModal = () => {
+  if (!showAnalyticsModal) return null;
+    const analyticsData = [
+      { 
+        title: 'Waste Processing Efficiency',
+        value: '87%',
+        change: '+12%',
+        trend: 'up',
+        description: 'Material processing rate across all categories'
+      },
+      {
+        title: 'Market Growth',
+        value: '₹2.4Cr',
+        change: '+23%',
+        trend: 'up',
+        description: 'Monthly marketplace transaction value'
+      },
+      {
+        title: 'Carbon Footprint Reduced',
+        value: '15.2k kg',
+        change: '+8%',
+        trend: 'up',
+        description: 'CO₂ emissions saved this month'
+      },
+      {
+        title: 'Active Listings',
+        value: '1,847',
+        change: '+156',
+        trend: 'up',
+        description: 'Current verified material listings'
+      }
+    ];
+
+    const categoryBreakdown = [
+      { name: 'Metal Scrap', value: 35, color: '#f59e0b' },
+      { name: 'Plastic Waste', value: 28, color: '#3b82f6' },
+      { name: 'E-Waste', value: 18, color: '#ef4444' },
+      { name: 'Textile', value: 12, color: '#10b981' },
+      { name: 'Paper', value: 7, color: '#8b5cf6' }
+    ];
+
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backdropFilter: 'blur(10px)',
+        zIndex: 2000,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px'
+      }}>
+        <div style={{
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          borderRadius: '24px',
+          padding: '32px',
+          maxWidth: '1000px',
+          width: '100%',
+          maxHeight: '90vh',
+          overflowY: 'auto',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+            <h2 style={{ color: 'white', fontSize: '2rem', fontWeight: '700', margin: 0 }}>
+              EcoPulse Analytics Dashboard
+            </h2>
+            <button onClick={() => setShowAnalyticsModal(false)}
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                border: 'none',
+                borderRadius: '12px',
+                color: 'white',
+                fontSize: '24px',
+                width: '40px',
+                height: '40px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              ×
+            </button>
+          </div>
+
+          {/* Key Metrics Grid */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            gap: '20px',
+            marginBottom: '32px'
+          }}>
+            {analyticsData.map((metric, index) => (
+              <div key={index} style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '16px',
+                padding: '24px',
+                backdropFilter: 'blur(10px)'
+              }}>
+                <div style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.9rem', marginBottom: '8px' }}>
+                  {metric.title}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                  <span style={{ color: 'white', fontSize: '2rem', fontWeight: '700' }}>
+                    {metric.value}
+                  </span>
+                  <span style={{
+                    color: metric.trend === 'up' ? '#10b981' : '#ef4444',
+                    fontSize: '0.9rem',
+                    fontWeight: '600'
+                  }}>
+                    {metric.change}
+                  </span>
+                </div>
+                <div style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.8rem' }}>
+                  {metric.description}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Category Breakdown */}
+          <div style={{ marginBottom: '32px' }}>
+            <h3 style={{ color: 'white', fontSize: '1.3rem', fontWeight: '600', marginBottom: '20px' }}>
+              Waste Category Distribution
+            </h3>
+            <div style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              borderRadius: '16px',
+              padding: '24px',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}>
+              {categoryBreakdown.map((category, index) => (
+                <div key={index} style={{ marginBottom: '16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span style={{ color: 'white', fontSize: '0.9rem' }}>{category.name}</span>
+                    <span style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.9rem' }}>{category.value}%</span>
+                  </div>
+                  <div style={{
+                    width: '100%',
+                    height: '8px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    borderRadius: '4px',
+                    overflow: 'hidden'
+                  }}>
+                    <div style={{
+                      width: `${category.value}%`,
+                      height: '100%',
+                      backgroundColor: category.color,
+                      borderRadius: '4px',
+                      transition: 'width 1s ease-out'
+                    }}></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Recent Activity */}
+          <div>
+            <h3 style={{ color: 'white', fontSize: '1.3rem', fontWeight: '600', marginBottom: '20px' }}>
+              Recent Market Activity
+            </h3>
+            <div style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              borderRadius: '16px',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}>
+              {[
+                { action: 'New listing added', item: 'Premium Copper Wire Scrap', seller: 'GreenTech Industries', time: '2 hours ago' },
+                { action: 'Order completed', item: 'Clean HDPE Plastic Bottles', seller: 'EcoRecycle Solutions', time: '4 hours ago' },
+                { action: 'Price updated', item: 'Aluminium Scrap Sheets', seller: 'MetalWorks Pvt Ltd', time: '6 hours ago' },
+                { action: 'New seller verified', item: 'Textile Processing Co.', seller: 'Textile Processing Co.', time: '8 hours ago' }
+              ].map((activity, index) => (
+                <div key={index} style={{
+                  padding: '16px 24px',
+                  borderBottom: index < 3 ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <div style={{ color: 'white', fontSize: '0.9rem', marginBottom: '4px' }}>
+                        <span style={{ fontWeight: '600' }}>{activity.action}:</span> {activity.item}
+                      </div>
+                      <div style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.8rem' }}>
+                        {activity.seller}
+                      </div>
+                    </div>
+                    <div style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '0.8rem' }}>
+                      {activity.time}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Your existing return content starts here
+
+ 
   return (
     <div style={{
       minHeight: '100vh',
@@ -671,26 +891,22 @@ const RoleCards = () => {
         </div>
 
         {/* Tab Navigation */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginBottom: '40px', flexWrap: 'wrap' }}>
-          <GlassButton
-            isActive={activeTab === 'browse'}
-            onClick={() => setActiveTab('browse')}
-          >
-            Browse Materials
-          </GlassButton>
-          <GlassButton
-            isActive={activeTab === 'sell'}
-            onClick={() => setActiveTab('sell')}
-          >
-            Sell Waste
-          </GlassButton>
-          <GlassButton
-            isActive={activeTab === 'analytics'}
-            onClick={() => setActiveTab('analytics')}
-          >
-            Analytics
-          </GlassButton>
-        </div>
+<div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginBottom: 40, flexWrap: 'wrap' }}>
+  <GlassButton isActive={activeTab === 'browse'} onClick={() => setActiveTab('browse')}>
+    Browse Materials
+  </GlassButton>
+  <GlassButton onClick={() => {
+    navigate('/signup?role=seller');
+    setTimeout(() => window.scrollTo({ top: 0, behavior: 'instant' }), 50);
+  }}>
+    Sell Waste
+  </GlassButton>
+<GlassButton onClick={() => setShowAnalyticsModal(true)}>
+  Analytics
+</GlassButton>
+
+</div>
+
 
         {/* Quick "All sellers on map" button */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginTop: 8 }}>
@@ -887,16 +1103,22 @@ const RoleCards = () => {
                       <div style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.9rem' }}>
                         {listing.seller} • {listing.location}
                       </div>
-                      <div style={{ display: 'flex', gap: 8 }}>
-                        <GlassButton onClick={() => console.log('Contact seller')}>
-                          Contact Seller
-                        </GlassButton>
+                     <div style={{ display: 'flex', gap: 8 }}>
+  <GlassButton onClick={() => {
+  navigate('/signup?role=buyer');
+  setTimeout(() => window.scrollTo({ top: 0, behavior: 'instant' }), 50);
+}}>
+  Contact Seller
+</GlassButton>
 
-                        {/* View on map button toggles an inline map for this listing */}
-                        <GlassButton onClick={() => setIsVisible(prev => ({ ...prev, [listing.id]: !prev[listing.id] }))}>
-                          {isVisible[listing.id] ? 'Hide Location' : 'View Location'}
-                        </GlassButton>
-                      </div>
+  {/* View on map button toggles an inline map for this listing */}
+  <GlassButton 
+    onClick={() => setIsVisible(prev => ({ ...prev, [listing.id]: !prev[listing.id] }))}
+  >
+    {isVisible[listing.id] ? 'Hide Location' : 'View Location'}
+  </GlassButton>
+</div>
+
                     </div>
 
                     {/* Individual listing map with custom marker */}
@@ -1014,6 +1236,8 @@ const RoleCards = () => {
                     letterSpacing: '1px'
                   }}>
                     {stat.label}
+                    
+    
                   </div>
                 </div>
               );
@@ -1021,6 +1245,9 @@ const RoleCards = () => {
           </div>
         </GlassCard>
       </div>
+      {/* Add this before the final closing div */}
+<AnalyticsModal />
+
     </div>
   );
 };
